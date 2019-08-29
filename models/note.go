@@ -23,3 +23,6 @@ func GetNote(id string) interface{}{
 	res := db.Where(&Note{Id: id}).First(&note)
 	return res.Value
 }
+//func AddNote()  interface{}{
+//
+//}

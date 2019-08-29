@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"io"
+	"log"
+	"net/http"
+	"os"
 	"test/models"
 )
 
@@ -28,5 +32,29 @@ func GetNote(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"notes": res,
 	})
+	return
+}
+func AddNote(c *gin.Context)  {
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("file err : %s", err.Error()))
+		return
+	}
+
+	filename := header.Filename
+	out, err := os.Create("public/" + filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filepath := "http://localhost:8080/file/" + filename
+	c.JSON(http.StatusOK, gin.H{"filepath": filepath})
 	return
 }

@@ -11,7 +11,6 @@ import (
 
 func init()  {
 	models.Setup()
-	models.GetNotes()
 }
 func middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -64,7 +63,7 @@ func main() {
 		//获取指定笔记
 		apiv1.GET("/note/:id", v1.GetNote)
 		//新建笔记
-		//apiv1.GET("/note/add", v1.AddNote)
+		apiv1.POST("/note", v1.AddNote)
 	}
 	router.Run(":8080")
 }
