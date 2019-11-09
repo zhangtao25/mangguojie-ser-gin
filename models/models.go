@@ -2,19 +2,37 @@ package models
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/zhangtao25/mangostreet-ser-gin/pkg/setting"
 	"log"
 	"time"
 )
 
 var db *gorm.DB
 
-func Setup()  {
+type Model struct {
+	ID         int `gorm:"primary_key" json:"id"`
+	CreatedOn  int `json:"created_on"`
+	ModifiedOn int `json:"modified_on"`
+	DeletedOn  int `json:"deleted_on"`
+}
+
+func Setup() {
 	var err error
-	db, err = gorm.Open("mysql", "root:wjyy26303@/mangguojie?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open(setting.DatabaseSetting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		setting.DatabaseSetting.User,
+		setting.DatabaseSetting.Password,
+		setting.DatabaseSetting.Host,
+		setting.DatabaseSetting.Name))
+
 	if err != nil {
-		log.Fatal("models.Setup err: %v", err)
+		log.Fatalf("models.Setup err: %v", err)
 	}
+
+	//gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
+	//	return setting.DatabaseSetting.TablePrefix + defaultTableName
+	//}
 
 	//db.SingularTable(true)
 	db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
@@ -84,7 +102,7 @@ func deleteCallback(scope *gorm.Scope) {
 	}
 }
 
-// addExtraSpaceIfExist adds a separator
+// addExtraSpaceIfExist 添加一个分隔符
 func addExtraSpaceIfExist(str string) string {
 	if str != "" {
 		return " " + str

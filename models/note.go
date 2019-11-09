@@ -1,28 +1,17 @@
 package models
 
+import "fmt"
+
 type Note struct {
-	Id			string		`json:"id"`
-	Title     	string 		`json:"title"`
-	Type     	string 		`json:"type"`
-	Desc   		string 		`json:"desc"`
-	Likes 		int 		`json:"likes"`
-	Cover 		string 		`json:"cover"`
-	UserId     	string 		`json:"user_id"`
-	Collects    int 		`json:"collects"`
-	Images		string		`json:"images"`
+	Id   int
+	Title string
 }
 
-func GetNotes() interface{}{
-	var note []Note
-	res := db.Find(&note)
-	return res.Value
-}
 
-func GetNote(id string) interface{}{
-	note := Note{}
-	res := db.Where(&Note{Id: id}).First(&note)
-	return res.Value
+func GetNoteser(title string) ( *Note , error) {
+	fmt.Print(title)
+	var note Note
+	db.Where("title = ?", title).Find(&note)
+
+	return &note, nil
 }
-//func AddNote()  interface{}{
-//
-//}
