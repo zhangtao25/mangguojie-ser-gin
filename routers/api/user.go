@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/zhangtao25/mangostreet-ser-gin/pkg/app"
 	"github.com/zhangtao25/mangostreet-ser-gin/pkg/e"
@@ -28,11 +27,15 @@ func AuthUsersByVerificationCode(c *gin.Context) {
 		return
 	}
 
-	fmt.Print(form.Username,654)
-
 	userService := user_service.User{
 		Username:form.Username,
 		Vcode:form.Vcode,
+	}
+
+	exists,err := userService.ExistByUsername()
+	if !exists {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		return
 	}
 
 	token, err := userService.Get()
